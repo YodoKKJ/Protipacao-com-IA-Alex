@@ -1,46 +1,23 @@
-# Reencontra - Prototipação com IA
+# EmprestaAí
 
-Projeto acadêmico da Aula 1 de Prototipação com IA e UI/UX: uma proposta de achados e perdidos para a faculdade.
+Projeto de Alex para a atividade **Aula 1 — Prototipação com IA e UI/UX**.
 
-## Telas do protótipo
+O EmprestaAí ajuda a registrar objetos emprestados, consultar com quem estão e marcar sua devolução. Esta etapa apresenta a definição do problema e um protótipo visual; ainda não é um aplicativo funcional.
 
-A apresentação visual principal está em **imagens**, com o layout da primeira versão:
+## Entrega da Aula 1
 
-- [Tela inicial](imagens-prototipo/01-tela-inicial.jpg)
-- [Detalhes do objeto](imagens-prototipo/02-detalhes-do-objeto.jpg)
-- [Cadastro de objeto](imagens-prototipo/03-cadastro-de-objeto.jpg)
-- [Baixar todas as imagens](imagens-prototipo/Reencontra-telas.zip)
+- [Documento e telas em PDF](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
+- [Prévia das três telas principais](entrega-aula1/telas-principais.png)
 
-![Tela inicial](imagens-prototipo/01-tela-inicial.jpg)
+O PDF inclui problema, persona provisória, histórias de usuário, requisitos priorizados com MoSCoW, escopo do MVP, hipóteses a verificar, perguntas de descoberta, plano de teste e as telas do fluxo principal.
 
-## Documentação da aula
+![Telas principais do EmprestaAí](entrega-aula1/telas-principais.png)
 
-- [Problema, persona, histórias de usuário e escopo MoSCoW](entrega-aula1/documento.md)
-- [Documento curto em PDF](entrega-aula1/SeuNome_Aula1_Reencontra.pdf)
-- [Telas da versão simplificada em PDF](entrega-aula1/SeuNome_Aula1_Reencontra_Telas.pdf)
+## Próximas etapas
 
-A documentação e o PDF de telas registram a etapa simplificada do projeto. As imagens em `imagens-prototipo/` mostram a proposta visual mais elaborada escolhida depois. A persona é hipotética e os testes com usuários ainda não foram realizados. Antes de entregar os PDFs, preencha seu nome e substitua `SeuNome` nos arquivos.
+1. **Aula 1 — Prototipação:** documento e telas entregues; entrevistas e teste com usuários ainda pendentes.
+2. **Aula 2 — Front-end:** transformar as telas em interface navegável e responsiva, usando dados de exemplo.
+3. **Back-end:** persistir empréstimos e implementar autenticação e operações de cadastro, consulta, edição e devolução.
+4. **MVP completo:** conectar front-end e back-end e testar o fluxo completo com usuários.
 
-## Código das versões
-
-| Pasta | Conteúdo |
-| --- | --- |
-| `imagens-prototipo/` | Imagens finais de apresentação e ZIP |
-| `versoes/primeira-versao/` | Código do layout visual usado nas imagens |
-| `dist/` | Wireframe simplificado navegável, em preto e branco |
-| `entrega-aula1/` | Documento curto, PDFs e capturas da versão simplificada |
-| `gerar-entrega.py` | Script que gera os PDFs a partir do documento e das capturas |
-
-Para visualizar uma versão localmente, abra seu `index.html` ou execute:
-
-```sh
-python -m http.server 8000 --directory versoes/primeira-versao
-```
-
-Acesse http://localhost:8000. Para o wireframe, troque o diretório por `dist`.
-
-HTML, CSS e JavaScript, sem backend. Os dados são fictícios. Na primeira versão, cadastros são salvos somente no navegador; no wireframe, desaparecem ao atualizar a página. As fontes da primeira versão são carregadas pelo Google Fonts com fallback local.
-
-A IA foi usada para organizar a ideia, propor requisitos e gerar as interfaces. O objetivo é prototipar e discutir a experiência do usuário; não é um sistema de achados e perdidos em operação.
-
-Para executar `gerar-entrega.py`, instale `reportlab`, `Pillow` e `pypdfium2`. O script depende das capturas presentes em `entrega-aula1/telas/` e gera previews em `tmp/pdfs/`.
+As etapas 3 e 4 representam o planejamento do projeto. Seus critérios específicos serão ajustados conforme as aulas correspondentes.
