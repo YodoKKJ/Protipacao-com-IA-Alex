@@ -4,6 +4,8 @@ Projeto de Alex desenvolvido em etapas a partir das aulas de prototipação e fr
 
 O EmprestaAí ajuda a registrar objetos emprestados, consultar com quem estão e marcar sua devolução.
 
+**[Abrir o aplicativo no navegador](https://yodokkj.github.io/Protipacao-com-IA-Alex/)**
+
 ## Entrega da Aula 1
 
 - [Documento e telas em PDF](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
