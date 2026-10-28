@@ -4,8 +4,6 @@ Projeto de Alex desenvolvido em etapas a partir das aulas de prototipação e fr
 
 O EmprestaAí ajuda a registrar objetos emprestados, consultar com quem estão e marcar sua devolução.
 
-**[Abrir o aplicativo no navegador](https://yodokkj.github.io/Protipacao-com-IA-Alex/)**
-
 ## Entrega da Aula 1
 
 - [Documento e telas em PDF](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
@@ -37,9 +35,30 @@ npm install
 npm run dev
 ```
 
-Abra o endereço local exibido pelo Vite. Para conferir a versão de produção, execute `npm run build`.
+Abra o endereço local exibido pelo Vite. Verificações disponíveis:
+
+```bash
+npm run test
+npm run build
+npm run format:check
+```
 
 Os dados iniciais são fictícios. Em um navegador de desktop, o link **Restaurar dados de exemplo** no rodapé permite voltar a eles.
+
+## Organização do código
+
+[Ler decisões de arquitetura](docs/ARQUITETURA.md)
+
+| Camada | Responsabilidade |
+| --- | --- |
+| `src/domain` | Tipos, validação e regras de criar, editar e devolver empréstimos. |
+| `src/infrastructure` | Dados fictícios e implementação do armazenamento no navegador. |
+| `src/application` | Hook que conecta as regras de negócio ao estado da interface. |
+| `src/components` e `src/pages` | Componentes reutilizáveis e telas do aplicativo. |
+
+`LoanService` é uma classe que concentra as regras do empréstimo. Ela depende da interface `LoanRepository`, e não da implementação em `localStorage`. Essa separação permite trocar o armazenamento por uma API nas próximas etapas sem reescrever as regras ou as telas. Os componentes React permanecem funcionais, conforme o padrão do framework; a orientação a objetos é aplicada onde há estado e comportamento de domínio.
+
+Os testes em `src/domain/LoanService.test.ts` verificam criação, validação, devolução e a proteção contra edição de um empréstimo concluído. O projeto usa TypeScript estrito, formatação padronizada e nomes que descrevem a responsabilidade de cada módulo.
 
 ## Próximas etapas
 
