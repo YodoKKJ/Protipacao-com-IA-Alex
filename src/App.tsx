@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { AlertCircle, CheckCircle2, X } from 'lucide-react'
+import { AlertCircle, CheckCircle2, LogOut, X } from 'lucide-react'
 import { useLoans } from './application/useLoans'
 import { useAuth } from './application/useAuth'
 import type { LoanDraft } from './domain/loan'
@@ -66,7 +66,18 @@ function LoanApp({ name, onLogout }: { name: string; onLogout: () => Promise<voi
       <div className="main-shell">
         <header className="mobile-header">
           <Brand />
-          <span className="mobile-greeting">Olá, {name.split(' ')[0]}</span>
+          <div className="mobile-account">
+            <span className="mobile-greeting">Olá, {name.split(' ')[0]}</span>
+            <button
+              className="mobile-logout"
+              type="button"
+              onClick={() => void onLogout()}
+              aria-label="Sair da conta"
+              title="Sair da conta"
+            >
+              <LogOut size={18} aria-hidden="true" />
+            </button>
+          </div>
         </header>
         <main id="main-content" key={location.pathname}>
           {loading ? (

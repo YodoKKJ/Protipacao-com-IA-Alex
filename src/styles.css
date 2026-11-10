@@ -1171,6 +1171,31 @@ main {
     color: var(--blue-deep);
     font-size: 11px;
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 110px;
+  }
+  .mobile-account {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+  .mobile-logout {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--muted);
+  }
+  .mobile-logout:hover {
+    color: var(--blue);
+    border-color: var(--blue);
   }
   .mobile-nav {
     position: fixed;

@@ -3,8 +3,8 @@ import { dirname, resolve } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 
 export function openDatabase(path = process.env.DATABASE_PATH ?? 'data/emprestaai.sqlite') {
-  const file = resolve(path)
-  mkdirSync(dirname(file), { recursive: true })
+  const file = path === ':memory:' ? path : resolve(path)
+  if (file !== ':memory:') mkdirSync(dirname(file), { recursive: true })
   const database = new DatabaseSync(file)
   database.exec(`
     PRAGMA journal_mode = WAL;

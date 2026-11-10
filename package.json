@@ -12,9 +12,13 @@
     "start": "tsx server/index.ts",
     "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "vitest run",
-    "format": "prettier --write src server package.json index.html vite.config.ts tsconfig.json tsconfig.server.json",
-    "format:check": "prettier --check src server package.json index.html vite.config.ts tsconfig.json tsconfig.server.json"
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "vitest run src/domain",
+    "test:integration": "vitest run server",
+    "test:e2e": "npm run build && playwright test",
+    "test:all": "npm run format:check && npm test",
+    "format": "prettier --write src server e2e playwright.config.ts package.json index.html vite.config.ts tsconfig.json tsconfig.server.json",
+    "format:check": "prettier --check src server e2e playwright.config.ts package.json index.html vite.config.ts tsconfig.json tsconfig.server.json"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
@@ -25,6 +29,7 @@
     "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",

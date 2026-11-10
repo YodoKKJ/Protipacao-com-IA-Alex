@@ -57,10 +57,22 @@ O corpo de criação/edição usa `item`, `person`, `lentAt`, `dueAt` e `note`; 
 
 ## Verificação
 
+Instale o navegador de teste uma vez:
+
 ```bash
-npm run test
-npm run build
-npm run format:check
+npx playwright install chromium
 ```
 
-Os testes cobrem regras de domínio e o fluxo HTTP real, incluindo autenticação, validação, isolamento entre contas, persistência e devolução. A pesquisa com usuários prevista no protótipo continua pendente; os testes automatizados verificam o software, não validam as hipóteses de produto.
+Depois, um único comando executa a formatação e as três camadas de teste:
+
+```bash
+npm run test:all
+```
+
+| Camada | Comando individual | O que verifica |
+| --- | --- | --- |
+| Unitária | `npm run test:unit` | Regras de criação, datas, edição e devolução do `LoanService` isolado. |
+| Integração | `npm run test:integration` | API HTTP real com autenticação, SQLite, isolamento de contas e persistência. |
+| Ponta a ponta | `npm run test:e2e` | Cadastro, formulário, edição, devolução, histórico e novo login no Chromium, em desktop e celular. |
+
+O teste ponta a ponta compila o projeto, inicia um servidor próprio na porta 3107 e usa SQLite em memória. Ele não altera o banco de uso normal. A pesquisa com usuários prevista no protótipo continua pendente; os testes automatizados verificam o software, não validam as hipóteses de produto.

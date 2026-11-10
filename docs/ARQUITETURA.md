@@ -43,4 +43,4 @@ O banco é criado em `data/` por padrão, fora do Git. Para implantação, mante
 
 ## Testes
 
-`src/domain/LoanService.test.ts` exercita validação e mudanças de estado com repositório em memória. `server/app.test.ts` inicia a API com banco SQLite temporário e verifica cadastro, login, isolamento, persistência, edição e devolução. `npm run build` verifica TypeScript do cliente e servidor e gera o front-end servido pelo Express.
+`src/domain/LoanService.test.ts` exercita validação e mudanças de estado com repositório em memória. `server/app.test.ts` inicia a API com banco SQLite temporário e verifica cadastro, login, isolamento, persistência, edição e devolução. `e2e/loan-flow.spec.ts` executa o fluxo completo no Chromium em desktop e celular, com servidor e banco em memória exclusivos para o teste. `npm run test:all` reúne as três camadas e a checagem de formatação. `npm run build` verifica TypeScript do cliente e servidor e gera o front-end servido pelo Express.

@@ -5,3 +5,5 @@ dist/
 *.tsbuildinfo
 data/
 .env
+playwright-report/
+test-results/
