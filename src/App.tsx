@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { AlertCircle, CheckCircle2, X } from 'lucide-react'
 import { useLoans } from './application/useLoans'
+import { useAuth } from './application/useAuth'
 import type { LoanDraft } from './domain/loan'
 import { MobileNav } from './components/MobileNav'
 import { Sidebar } from './components/Sidebar'
@@ -12,14 +13,26 @@ import { HistoryPage } from './pages/HistoryPage'
 import { HomePage } from './pages/HomePage'
 import { NewPage } from './pages/NewPage'
 import { NotFound } from './pages/NotFound'
+import { AuthPage } from './pages/AuthPage'
 
 type Notice = { message: string; kind: 'success' | 'error' }
 
 export default function App() {
-  const { loans, loading, loadError, createLoan, updateLoan, returnLoan, resetDemo } = useLoans()
+  const auth = useAuth()
+  if (auth.loading)
+    return (
+      <div className="auth-loading" role="status">
+        Carregando EmprestaAí...
+      </div>
+    )
+  if (!auth.user) return <AuthPage onLogin={auth.login} onRegister={auth.register} />
+  return <LoanApp name={auth.user.name} onLogout={auth.logout} />
+}
+
+function LoanApp({ name, onLogout }: { name: string; onLogout: () => Promise<void> }) {
+  const { loans, loading, loadError, createLoan, updateLoan, returnLoan } = useLoans()
   const [notice, setNotice] = useState<Notice | null>(null)
   const location = useLocation()
-  const navigate = useNavigate()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -47,23 +60,13 @@ export default function App() {
     setNotice({ message: 'Devolução registrada. Objeto movido para o histórico.', kind: 'success' })
   }
 
-  async function handleReset(): Promise<void> {
-    try {
-      await resetDemo()
-      navigate('/')
-      setNotice({ message: 'Dados de demonstração restaurados.', kind: 'success' })
-    } catch {
-      setNotice({ message: 'Não foi possível restaurar os dados. Tente novamente.', kind: 'error' })
-    }
-  }
-
   return (
     <div className="app-shell">
       <Sidebar openCount={loans.filter((loan) => !loan.returnedAt).length} />
       <div className="main-shell">
         <header className="mobile-header">
           <Brand />
-          <span className="mobile-demo">Demo</span>
+          <span className="mobile-greeting">Olá, {name.split(' ')[0]}</span>
         </header>
         <main id="main-content" key={location.pathname}>
           {loading ? (
@@ -95,8 +98,8 @@ export default function App() {
           )}
         </main>
         <footer className="footer">
-          <span>EmprestaAí · Front-end da Aula 2</span>
-          <button onClick={handleReset}>Restaurar dados de exemplo</button>
+          <span>EmprestaAí · Seus empréstimos, em um só lugar</span>
+          <button onClick={() => void onLogout()}>Sair da conta</button>
         </footer>
       </div>
       <MobileNav />

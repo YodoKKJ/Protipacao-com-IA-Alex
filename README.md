@@ -1,41 +1,61 @@
 # EmprestaAí
 
-Projeto de Alex desenvolvido em etapas a partir das aulas de prototipação e front-end com IA.
+Aplicativo para registrar objetos emprestados, consultar com quem estão e acompanhar a devolução. O projeto reúne protótipo, front-end responsivo e back-end funcional com contas separadas e persistência SQLite.
 
-O EmprestaAí ajuda a registrar objetos emprestados, consultar com quem estão e marcar sua devolução.
+## Entregas
 
-## Entrega da Aula 1
+- [Aula 1: documento e telas do protótipo](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
+- [Aula 2: prévia do front-end](entrega-aula2/preview-desktop.png)
+- [Arquitetura e decisões técnicas](docs/ARQUITETURA.md)
 
-- [Documento e telas em PDF](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
-- [Prévia das três telas principais](entrega-aula1/telas-principais.png)
+## Como executar
 
-O PDF inclui problema, persona provisória, histórias de usuário, requisitos priorizados com MoSCoW, escopo do MVP, hipóteses a verificar, perguntas de descoberta, plano de teste e as telas do fluxo principal.
-
-![Telas principais do EmprestaAí](entrega-aula1/telas-principais.png)
-
-## Aula 2 — Front-end navegável
-
-O front-end transforma o protótipo em uma interface responsiva, com visual limpo, superfícies translúcidas e animações suaves. Ele contém:
-
-- lista de empréstimos em aberto com busca;
-- formulário de novo empréstimo com validação;
-- detalhes de cada objeto e edição do registro;
-- confirmação de devolução e histórico;
-- dados de exemplo armazenados no navegador, sem back-end nesta etapa;
-- navegação adaptada para desktop e celular, com suporte a teclado e redução de movimento.
-
-![Prévia do front-end no desktop](entrega-aula2/preview-desktop.png)
-
-### Executar localmente
-
-Requer Node.js e npm.
+Requer **Node.js 22.13 ou superior** e npm. O banco SQLite é criado automaticamente em `data/emprestaai.sqlite` e não é versionado.
 
 ```bash
 npm install
+npm run build
+npm start
+```
+
+Abra `http://localhost:3001`. Crie uma conta para começar; não há dados fictícios na conta nova.
+
+Para desenvolvimento com recarregamento automático, abra dois terminais:
+
+```bash
+npm run dev:api
+```
+
+```bash
 npm run dev
 ```
 
-Abra o endereço local exibido pelo Vite. Verificações disponíveis:
+O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e encaminha `/api` ao servidor na porta 3001. `PORT` e `DATABASE_PATH` podem ser definidos por variáveis de ambiente.
+
+## Funcionalidades
+
+- Cadastro, login e logout por sessão em cookie `HttpOnly`.
+- Empréstimos privados por conta: criar, listar, consultar, editar e marcar devolução.
+- Busca, histórico, destaque de atrasados e interface para desktop e celular.
+- Validação de dados no servidor, senha derivada com `scrypt` e banco SQLite persistente.
+
+### API
+
+| Método | Rota | Função |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Criar conta e iniciar sessão |
+| `POST` | `/api/auth/login` | Entrar |
+| `POST` | `/api/auth/logout` | Encerrar sessão |
+| `GET` | `/api/auth/me` | Consultar usuário atual |
+| `GET` | `/api/loans` | Listar empréstimos da conta |
+| `GET` | `/api/loans/:id` | Consultar um empréstimo |
+| `POST` | `/api/loans` | Criar empréstimo |
+| `PUT` | `/api/loans/:id` | Editar empréstimo em aberto |
+| `POST` | `/api/loans/:id/return` | Registrar devolução |
+
+O corpo de criação/edição usa `item`, `person`, `lentAt`, `dueAt` e `note`; datas seguem `AAAA-MM-DD`. Erros retornam `{ "error": "mensagem" }` com status apropriado.
+
+## Verificação
 
 ```bash
 npm run test
@@ -43,28 +63,4 @@ npm run build
 npm run format:check
 ```
 
-Os dados iniciais são fictícios. Em um navegador de desktop, o link **Restaurar dados de exemplo** no rodapé permite voltar a eles.
-
-## Organização do código
-
-[Ler decisões de arquitetura](docs/ARQUITETURA.md)
-
-| Camada | Responsabilidade |
-| --- | --- |
-| `src/domain` | Tipos, validação e regras de criar, editar e devolver empréstimos. |
-| `src/infrastructure` | Dados fictícios e implementação do armazenamento no navegador. |
-| `src/application` | Hook que conecta as regras de negócio ao estado da interface. |
-| `src/components` e `src/pages` | Componentes reutilizáveis e telas do aplicativo. |
-
-`LoanService` é uma classe que concentra as regras do empréstimo. Ela depende da interface `LoanRepository`, e não da implementação em `localStorage`. Essa separação permite trocar o armazenamento por uma API nas próximas etapas sem reescrever as regras ou as telas. Os componentes React permanecem funcionais, conforme o padrão do framework; a orientação a objetos é aplicada onde há estado e comportamento de domínio.
-
-Os testes em `src/domain/LoanService.test.ts` verificam criação, validação, devolução e a proteção contra edição de um empréstimo concluído. O projeto usa TypeScript estrito, formatação padronizada e nomes que descrevem a responsabilidade de cada módulo.
-
-## Próximas etapas
-
-1. **Aula 1 — Prototipação:** documento e telas entregues; entrevistas e teste com usuários ainda pendentes.
-2. **Aula 2 — Front-end:** interface navegável e responsiva implementada com dados de exemplo.
-3. **Back-end:** persistir empréstimos e implementar autenticação e operações de cadastro, consulta, edição e devolução.
-4. **MVP completo:** conectar front-end e back-end e testar o fluxo completo com usuários.
-
-As etapas 3 e 4 representam o planejamento do projeto. Seus critérios específicos serão ajustados conforme as aulas correspondentes.
+Os testes cobrem regras de domínio e o fluxo HTTP real, incluindo autenticação, validação, isolamento entre contas, persistência e devolução. A pesquisa com usuários prevista no protótipo continua pendente; os testes automatizados verificam o software, não validam as hipóteses de produto.

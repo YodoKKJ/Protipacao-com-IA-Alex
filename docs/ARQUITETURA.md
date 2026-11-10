@@ -1,44 +1,46 @@
 # Arquitetura do EmprestaAí
 
-O projeto desta etapa é um front-end React com dados de demonstração. A organização prepara as regras de empréstimo para uma futura API, sem apresentar `localStorage` como back-end.
-
 ```mermaid
 flowchart LR
-  A[Telas e componentes React] --> B[useLoans]
-  B --> C[LoanService]
-  C --> D[LoanRepository: interface]
-  E[BrowserLoanRepository: localStorage] -. implementa .-> D
-  F[Futura implementação HTTP] -. poderá implementar .-> D
+  UI[React: páginas e componentes] --> Hook[useAuth / useLoans]
+  Hook --> Client[Cliente HTTP]
+  Client --> API[Express: rotas e sessão]
+  API --> Service[LoanService]
+  Service --> Contract[LoanRepository: interface]
+  Sqlite[SqliteLoanRepository] -. implementa .-> Contract
+  Sqlite --> DB[(SQLite)]
+  API --> Auth[AuthService]
+  Auth --> DB
 ```
 
 ## Responsabilidades
 
-- **`src/domain/loan.ts`** define o empréstimo e regras simples de data e situação.
-- **`src/domain/LoanService.ts`** concentra criação, edição, devolução e validações. Recebe o repositório no construtor.
-- **`src/domain/LoanRepository.ts`** descreve as operações assíncronas de consulta, criação e atualização necessárias ao domínio.
-- **`src/infrastructure/BrowserLoanRepository.ts`** implementa esse contrato usando armazenamento local. Os registros iniciais ficam em `demoLoans.ts`.
-- **`src/application/useLoans.ts`** coordena o serviço com o estado React e trata o carregamento inicial.
-- **`src/pages` e `src/components`** cuidam de navegação, apresentação, formulários e feedback visual.
+- `src/pages` e `src/components`: apresentação, navegação, formulários e feedback.
+- `src/application`: estado da interface e operações assíncronas.
+- `src/infrastructure/LoanApi.ts`: cliente HTTP, sem regras de negócio.
+- `src/domain`: entidade, contrato de repositório, validação e transições do empréstimo.
+- `server/app.ts`: rotas, autenticação obrigatória e conversão de erros em respostas HTTP.
+- `server/AuthService.ts`: cadastro, verificação de senha e sessões.
+- `server/SqliteLoanRepository.ts`: operações SQL sempre limitadas ao usuário autenticado.
+- `server/database.ts`: abertura do banco e criação idempotente do esquema.
 
-## Decisões de projeto
+`LoanService` recebe `LoanRepository` por construtor. O servidor instancia o serviço com um repositório vinculado ao ID da sessão, mantendo as regras de domínio sem dependência de Express ou SQLite. Componentes React são funções, conforme a convenção do framework; classes são usadas para serviços e adaptadores que encapsulam comportamento.
 
-1. **Encapsulamento:** o serviço guarda as regras de negócio; a interface não altera registros diretamente.
-2. **Responsabilidade única:** componentes não acessam `localStorage`, e o repositório não contém regras de interface.
-3. **Inversão de dependência:** `LoanService` depende da interface `LoanRepository`, não de uma classe concreta de armazenamento.
-4. **Composição:** a implementação do repositório é injetada no serviço. Não há herança artificial para um domínio pequeno.
-5. **Contrato assíncrono:** mesmo o armazenamento local seguindo esse contrato, a futura integração HTTP não exige mudar a assinatura das operações no serviço e nas telas.
-6. **Estados explícitos:** o formulário mostra validações e salvamento; a interface diferencia empréstimos em aberto, atrasados e devolvidos.
-
-## Regras verificadas
+## Regras de negócio
 
 - Objeto, pessoa e data do empréstimo são obrigatórios.
-- Datas precisam ser válidas, e a previsão não pode anteceder o empréstimo.
-- Um empréstimo concluído não pode ser editado.
-- Confirmar a devolução novamente não muda a data já registrada.
-- IDs inexistentes geram erro de domínio.
+- Datas devem existir no calendário; a previsão não pode anteceder o empréstimo.
+- Um empréstimo devolvido não pode ser editado.
+- Repetir a devolução preserva a primeira data registrada.
+- IDs desconhecidos ou pertencentes a outra conta não expõem dados.
+- O servidor gera IDs; o cliente não decide identidade nem estado de devolução.
 
-Esses comportamentos são testados em `src/domain/LoanService.test.ts` com um repositório em memória. O front-end também foi verificado manualmente no navegador: criação, validação, detalhes, devolução, histórico e restauração dos dados de demonstração.
+## Segurança e persistência
 
-## Próxima etapa
+As senhas são armazenadas como hash `scrypt` com salt aleatório. A sessão usa token aleatório; apenas seu hash é guardado no SQLite. O cookie é `HttpOnly` e `SameSite=Strict`, e requisições mutáveis com `Origin` de outro host são rejeitadas. Em produção com `NODE_ENV=production`, o cookie exige HTTPS. Toda consulta a empréstimos filtra por `user_id`, inclusive leitura e atualização por ID. SQL usa parâmetros, e o corpo JSON tem limite de 16 KB.
 
-Para o back-end, criar uma implementação HTTP de `LoanRepository` e tratar autenticação e persistência no servidor. O controle de acesso deverá ocorrer na API; esconder botões na interface não substitui autorização no servidor.
+O banco é criado em `data/` por padrão, fora do Git. Para implantação, manter o arquivo em armazenamento persistente e usar HTTPS. O MVP ainda não inclui verificação de e-mail, recuperação de senha, envio de lembretes nem exclusão de conta.
+
+## Testes
+
+`src/domain/LoanService.test.ts` exercita validação e mudanças de estado com repositório em memória. `server/app.test.ts` inicia a API com banco SQLite temporário e verifica cadastro, login, isolamento, persistência, edição e devolução. `npm run build` verifica TypeScript do cliente e servidor e gera o front-end servido pelo Express.

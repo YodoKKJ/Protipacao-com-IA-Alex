@@ -28,9 +28,6 @@ export function Sidebar({ openCount }: { openCount: number }) {
           <Sparkles size={18} aria-hidden="true" />
           <p>Um lugar tranquilo para lembrar de tudo que você compartilhou.</p>
         </div>
-        <span className="demo-tag">
-          <span /> Versão de demonstração
-        </span>
       </div>
     </aside>
   )

@@ -105,7 +105,7 @@ export function HomePage({ loans }: { loans: Loan[] }) {
         </div>
       )}
       <div className="helper-line">
-        <Info size={16} aria-hidden="true" /> Dados de demonstração salvos apenas neste navegador.
+        <Info size={16} aria-hidden="true" /> Seus registros ficam salvos na sua conta.
       </div>
     </div>
   )
