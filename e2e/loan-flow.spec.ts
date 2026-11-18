@@ -34,13 +34,13 @@ test('cadastra, edita, devolve e recupera um empréstimo após novo login', asyn
 
   const loanUrl = page.url()
   await page.getByRole('link', { name: 'Emitir nota simulada' }).click()
-  await expect(page.getByLabel('Destinatário')).toHaveValue('Bia')
+  await expect(page.getByLabel('Nome / razão social')).toHaveValue('Bia')
   await expect(page.getByLabel('Descrição')).toHaveValue(item)
-  await page.getByLabel('Valor demonstrativo (R$)').fill('45,90')
-  await page.getByRole('button', { name: 'Emitir nota simulada' }).click()
-  await expect(page.getByRole('heading', { name: 'Nota 000001' })).toBeVisible()
+  await page.getByLabel('Valor unitário (R$)').fill('45.90')
+  await page.getByRole('button', { name: 'Gerar DANFE simulado' }).click()
+  await expect(page.getByRole('article', { name: 'DANFE simulado número 000001' })).toBeVisible()
   await expect(page.getByText('R$ 45,90').first()).toBeVisible()
-  await expect(page.getByText(/não tem validade fiscal/)).toBeVisible()
+  await expect(page.getByText(/SEM VALOR FISCAL/).first()).toBeVisible()
   await page.evaluate(() => {
     window.print = () => {
       document.body.dataset.printRequested = 'true'
@@ -71,4 +71,12 @@ test('cadastra, edita, devolve e recupera um empréstimo após novo login', asyn
   await page.getByRole('button', { name: 'Entrar' }).click()
   await page.getByRole('link', { name: 'Histórico' }).click()
   await expect(page.getByText(item)).toBeVisible()
+})
+
+test('entra na conta local de demonstração', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox', { name: 'E-mail' }).fill('demo@emprestaai.local')
+  await page.getByLabel('Senha').fill('EmprestaAi123!')
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await expect(page.getByRole('heading', { name: /O que é seu/ })).toBeVisible()
 })

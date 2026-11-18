@@ -9,6 +9,7 @@ type NoteRow = {
   description: string
   amount_cents: number
   issued_at: string
+  fiscal_json: string | null
 }
 
 function toNote(row: NoteRow): Note {
@@ -20,6 +21,7 @@ function toNote(row: NoteRow): Note {
     description: row.description,
     amountCents: row.amount_cents,
     issuedAt: row.issued_at,
+    fiscal: row.fiscal_json ? JSON.parse(row.fiscal_json) : null,
   }
 }
 
@@ -54,8 +56,8 @@ export class SqliteNoteRepository implements NoteRepository {
       this.database
         .prepare(
           `INSERT INTO notes
-          (id, user_id, number, issuer_name, recipient, description, amount_cents, issued_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          (id, user_id, number, issuer_name, recipient, description, amount_cents, issued_at, fiscal_json)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .run(
           note.id,
@@ -66,6 +68,7 @@ export class SqliteNoteRepository implements NoteRepository {
           note.description,
           note.amountCents,
           note.issuedAt,
+          note.fiscal ? JSON.stringify(note.fiscal) : null,
         )
       this.database.exec('COMMIT')
       return { ...note, number: next.number }

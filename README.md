@@ -18,7 +18,13 @@ npm run build
 npm start
 ```
 
-Abra `http://localhost:3001`. Crie uma conta para começar; não há dados fictícios na conta nova.
+Abra `http://localhost:3001`. Para experimentar sem cadastro, use a conta local de demonstração:
+
+| E-mail | Senha |
+| --- | --- |
+| `demo@emprestaai.local` | `EmprestaAi123!` |
+
+Ela é criada automaticamente ao iniciar o servidor pela primeira vez em `localhost` e seus dados permanecem no SQLite local. Você também pode criar sua própria conta. A conta de demonstração fica bloqueada com `NODE_ENV=production` ou quando o servidor é exposto em uma interface de rede (`HOST=0.0.0.0`), mesmo que o banco local seja reaproveitado.
 
 Para desenvolvimento com recarregamento automático, abra dois terminais:
 
@@ -30,14 +36,14 @@ npm run dev:api
 npm run dev
 ```
 
-O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e encaminha `/api` ao servidor na porta 3001. `PORT` e `DATABASE_PATH` podem ser definidos por variáveis de ambiente.
+O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e encaminha `/api` ao servidor na porta 3001. `PORT`, `HOST` e `DATABASE_PATH` podem ser definidos por variáveis de ambiente. O servidor usa `127.0.0.1` como host padrão.
 
 ## Funcionalidades
 
 - Cadastro, login e logout por sessão em cookie `HttpOnly`.
 - Empréstimos privados por conta: criar, listar, consultar, editar e marcar devolução.
 - Busca, histórico, destaque de atrasados e interface para desktop e celular.
-- Notas demonstrativas com numeração por conta, consulta, impressão e opção de preencher dados a partir de um empréstimo. **São simulações sem validade fiscal e sem envio à SEFAZ.**
+- Módulo fiscal de demonstração com campos de emitente, destinatário, produtos, NCM, CFOP, CST, tributos informativos, transporte, pagamento e DANFE para imprimir. **Não gera XML, chave de acesso ou protocolo e não envia dados à SEFAZ.**
 - Validação de dados no servidor, senha derivada com `scrypt` e banco SQLite persistente.
 
 ### API
@@ -57,7 +63,9 @@ O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e en
 | `GET` | `/api/notes/:id` | Consultar uma nota simulada |
 | `POST` | `/api/notes` | Emitir uma nota simulada |
 
-O corpo de criação/edição de empréstimo usa `item`, `person`, `lentAt`, `dueAt` e `note`; datas seguem `AAAA-MM-DD`. A emissão de nota usa `recipient`, `description` e `amountCents` (inteiro em centavos). O servidor define número, emitente e data. Erros retornam `{ "error": "mensagem" }` com status apropriado.
+O corpo de criação/edição de empréstimo usa `item`, `person`, `lentAt`, `dueAt` e `note`; datas seguem `AAAA-MM-DD`. A emissão de nota usa `recipient`, `description`, `amountCents` e o objeto `fiscal` com os campos do formulário. O servidor define número, emitente, data e total aritmético. Notas antigas sem `fiscal` continuam legíveis. Erros retornam `{ "error": "mensagem" }` com status apropriado.
+
+O DANFE simulado segue a organização geral do [Manual de Orientação do Contribuinte da NF-e, capítulo 7](https://www.nfe.fazenda.gov.br/portal/exibirArquivo.aspx?AspxAutoDetectCookieSupport=1&conteudo=nebWFce4X9o%3D). Ele não representa uma NF-e autorizada, mesmo em homologação. Os campos tributários são apenas informativos; não há validação de CNPJ, NCM, CFOP, regras fiscais ou cálculo oficial de impostos.
 
 ## Verificação
 

@@ -1873,3 +1873,317 @@ main {
     print-color-adjust: exact;
   }
 }
+
+.fiscal-form-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 16px;
+}
+.fiscal-form {
+  display: grid;
+  gap: 30px;
+}
+.fiscal-form-section {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.fiscal-form-section h2 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  letter-spacing: -0.03em;
+}
+.fiscal-form-section > p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: -10px 0 18px;
+}
+.fiscal-form-section .form-grid {
+  gap: 18px;
+}
+.fiscal-section-heading,
+.fiscal-item-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fiscal-item-form {
+  padding: 22px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fafbfd;
+}
+.fiscal-item-heading {
+  margin-bottom: 20px;
+}
+.fiscal-item-heading button {
+  border: 0;
+  background: none;
+  color: #a34343;
+  padding: 5px;
+}
+.fiscal-live-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 25px;
+  margin-top: 22px;
+  font-size: 14px;
+}
+.fiscal-live-total span {
+  color: var(--muted);
+}
+.fiscal-live-total strong {
+  font-size: 20px;
+  color: var(--blue-deep);
+}
+.danfe-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+.danfe-mobile-hint {
+  display: none;
+}
+.danfe-sheet {
+  position: relative;
+  min-width: 840px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #adb5bd;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  box-shadow: var(--shadow);
+}
+.danfe-sheet > *:not(.danfe-watermark) {
+  position: relative;
+  z-index: 1;
+}
+.danfe-watermark {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-26deg);
+  font-size: 66px;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.danfe-top-warning {
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 2px solid #111;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+.danfe-receipt {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  min-height: 42px;
+  padding: 7px;
+  margin-bottom: 8px;
+  border: 1px solid #222;
+  font-size: 9px;
+}
+.danfe-receipt span {
+  max-width: 75%;
+}
+.danfe-receipt strong {
+  white-space: nowrap;
+}
+.danfe-header {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.3fr;
+  border: 1px solid #222;
+}
+.danfe-header > div {
+  min-height: 108px;
+  padding: 9px;
+  border-right: 1px solid #222;
+}
+.danfe-header > div:last-child {
+  border-right: 0;
+}
+.danfe-issuer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+}
+.danfe-issuer > strong {
+  font-size: 17px;
+}
+.danfe-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+}
+.danfe-identity > strong {
+  font-size: 20px;
+}
+.danfe-identity > span {
+  font-size: 8px;
+  font-weight: 700;
+}
+.danfe-identity > b {
+  font-size: 13px;
+}
+.danfe-identity small b {
+  border: 1px solid #222;
+  padding: 2px 5px;
+}
+.danfe-access {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  text-align: center;
+}
+.danfe-access > span {
+  font-size: 8px;
+  font-weight: 700;
+}
+.danfe-access > strong {
+  padding: 5px;
+  border: 1px solid #555;
+  font-size: 10px;
+}
+.danfe-grid {
+  display: grid;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #222;
+}
+.danfe-grid--three {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+.danfe-grid--four {
+  grid-template-columns: repeat(4, 1fr);
+}
+.danfe-grid--five {
+  grid-template-columns: repeat(5, 1fr);
+}
+.danfe-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 42px;
+  padding: 5px 7px;
+  border-right: 1px solid #222;
+  overflow-wrap: anywhere;
+}
+.danfe-box span {
+  font-size: 8px;
+  font-weight: 700;
+}
+.danfe-box strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+.danfe-section-title {
+  margin: 9px 0 3px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.danfe-items {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.danfe-items th,
+.danfe-items td {
+  border: 1px solid #222;
+  padding: 5px 3px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.danfe-items th {
+  background: #f0f0f0;
+  font-size: 7px;
+}
+.danfe-items td {
+  font-size: 8px;
+}
+.danfe-items th:nth-child(2) {
+  width: 22%;
+}
+.danfe-additional {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  border: 1px solid #222;
+  min-height: 95px;
+}
+.danfe-additional > div {
+  padding: 7px;
+  border-right: 1px solid #222;
+  overflow-wrap: anywhere;
+}
+.danfe-additional > div:last-child {
+  border-right: 0;
+}
+.danfe-additional span {
+  font-size: 8px;
+  font-weight: 700;
+}
+.danfe-additional p {
+  margin: 7px 0;
+  white-space: pre-wrap;
+}
+.danfe-additional strong {
+  display: block;
+  margin-top: 8px;
+}
+@media (max-width: 620px) {
+  .danfe-mobile-hint {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0 0 12px;
+  }
+  .fiscal-form {
+    padding: 20px 15px;
+  }
+  .fiscal-item-form {
+    padding: 16px;
+  }
+  .fiscal-live-total {
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .danfe-scroll {
+    margin-right: calc((100vw - 100%) / -2);
+  }
+}
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+  .danfe-scroll {
+    overflow: visible;
+    padding: 0;
+  }
+  .danfe-sheet {
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+  }
+  .danfe-watermark {
+    color: rgba(0, 0, 0, 0.1);
+  }
+}

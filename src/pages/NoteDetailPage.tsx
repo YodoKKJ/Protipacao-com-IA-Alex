@@ -4,6 +4,7 @@ import { ArrowLeft, Printer } from 'lucide-react'
 import type { Note } from '../domain/note'
 import { NoteApi } from '../infrastructure/NoteApi'
 import { formatMoney, formatNoteDate, formatNoteNumber } from '../notePresentation'
+import { FiscalDanfe } from '../components/FiscalDanfe'
 
 const noteApi = new NoteApi()
 
@@ -57,46 +58,50 @@ export function NoteDetailPage() {
           <Printer size={18} /> Imprimir ou salvar em PDF
         </button>
       </div>
-      <article className="note-document" aria-labelledby="note-document-title">
-        <div className="note-document-top">
-          <span className="note-document-brand">
-            Empresta<span>Aí</span>
-          </span>
-          <span className="note-document-status">SIMULAÇÃO</span>
-        </div>
-        <div className="note-document-heading">
-          <div>
-            <p className="note-document-overline">DOCUMENTO DE DEMONSTRAÇÃO</p>
-            <h1 id="note-document-title">Nota {formatNoteNumber(note.number)}</h1>
-            <p>Emitida em {formatNoteDate(note.issuedAt)}</p>
+      {note.fiscal ? (
+        <FiscalDanfe note={note} />
+      ) : (
+        <article className="note-document" aria-labelledby="note-document-title">
+          <div className="note-document-top">
+            <span className="note-document-brand">
+              Empresta<span>Aí</span>
+            </span>
+            <span className="note-document-status">SIMULAÇÃO</span>
           </div>
-          <div className="note-document-number">#{formatNoteNumber(note.number)}</div>
-        </div>
-        <div className="note-document-parties">
-          <div>
-            <span>EMITENTE</span>
-            <strong>{note.issuerName}</strong>
+          <div className="note-document-heading">
+            <div>
+              <p className="note-document-overline">DOCUMENTO DE DEMONSTRAÇÃO</p>
+              <h1 id="note-document-title">Nota {formatNoteNumber(note.number)}</h1>
+              <p>Emitida em {formatNoteDate(note.issuedAt)}</p>
+            </div>
+            <div className="note-document-number">#{formatNoteNumber(note.number)}</div>
           </div>
-          <div>
-            <span>DESTINATÁRIO</span>
-            <strong>{note.recipient}</strong>
+          <div className="note-document-parties">
+            <div>
+              <span>EMITENTE</span>
+              <strong>{note.issuerName}</strong>
+            </div>
+            <div>
+              <span>DESTINATÁRIO</span>
+              <strong>{note.recipient}</strong>
+            </div>
           </div>
-        </div>
-        <div className="note-document-line">
-          <div>
-            <span>DESCRIÇÃO</span>
-            <p>{note.description}</p>
+          <div className="note-document-line">
+            <div>
+              <span>DESCRIÇÃO</span>
+              <p>{note.description}</p>
+            </div>
+            <strong>{formatMoney(note.amountCents)}</strong>
           </div>
-          <strong>{formatMoney(note.amountCents)}</strong>
-        </div>
-        <div className="note-document-total">
-          <span>Valor demonstrativo</span>
-          <strong>{formatMoney(note.amountCents)}</strong>
-        </div>
-        <div className="note-document-warning">
-          Esta nota é fictícia, não tem validade fiscal e não foi transmitida à SEFAZ.
-        </div>
-      </article>
+          <div className="note-document-total">
+            <span>Valor demonstrativo</span>
+            <strong>{formatMoney(note.amountCents)}</strong>
+          </div>
+          <div className="note-document-warning">
+            Esta nota é fictícia, não tem validade fiscal e não foi transmitida à SEFAZ.
+          </div>
+        </article>
+      )}
     </div>
   )
 }

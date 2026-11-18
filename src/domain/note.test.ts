@@ -58,4 +58,66 @@ describe('NoteService', () => {
     ).rejects.toThrow('Informe um valor')
     await expect(notes.list()).resolves.toEqual([])
   })
+
+  it('calcula o total do DANFE demonstrativo sem confiar no total informado pelo cliente', async () => {
+    const notes = service()
+    const fiscal = {
+      natureOperation: 'Remessa simulada',
+      series: '1',
+      issuerDocument: '',
+      issuerStateRegistration: '',
+      issuerAddress: '',
+      issuerCity: '',
+      issuerState: '',
+      issuerZip: '',
+      recipientDocument: '',
+      recipientAddress: '',
+      recipientCity: '',
+      recipientState: '',
+      recipientZip: '',
+      items: [
+        {
+          code: 'LIV-1',
+          description: 'Livro',
+          ncm: '',
+          cfop: '',
+          cst: '',
+          unit: 'UN',
+          quantity: 2,
+          unitPriceCents: 4590,
+          icmsRate: 0,
+          ipiRate: 0,
+        },
+      ],
+      freightCents: 300,
+      insuranceCents: 0,
+      otherCents: 0,
+      discountCents: 100,
+      icmsBaseCents: 0,
+      icmsCents: 0,
+      ipiCents: 0,
+      carrierName: '',
+      freightMode: '9 - Sem frete',
+      paymentMethod: 'Sem pagamento',
+      additionalInfo: 'Teste',
+    }
+    const note = await notes.issue(
+      { recipient: 'Ana', description: 'Livro', amountCents: 1, fiscal },
+      'Alex',
+    )
+    expect(note.fiscal?.productsCents).toBe(9180)
+    expect(note.amountCents).toBe(9380)
+    expect(note.fiscal?.totalCents).toBe(9380)
+    await expect(
+      notes.issue(
+        {
+          recipient: 'Ana',
+          description: 'Livro',
+          amountCents: 1,
+          fiscal: { ...fiscal, items: [] },
+        },
+        'Alex',
+      ),
+    ).rejects.toThrow('Informe de 1 a 30 itens')
+  })
 })

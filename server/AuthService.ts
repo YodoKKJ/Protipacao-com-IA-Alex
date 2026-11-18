@@ -7,6 +7,7 @@ import {
 } from 'node:crypto'
 import { promisify } from 'node:util'
 import type { AppDatabase } from './database'
+import { DEMO_EMAIL, demoLoginAllowed } from './demoPolicy'
 
 const scrypt = promisify(scryptCallback)
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000
@@ -43,6 +44,9 @@ export class AuthService {
     if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new AuthError('Informe um e-mail válido.')
     }
+    if (email === DEMO_EMAIL && !demoLoginAllowed()) {
+      throw new AuthError('E-mail reservado para demonstração local.')
+    }
     if (
       typeof input.password !== 'string' ||
       input.password.length < 8 ||
@@ -65,6 +69,9 @@ export class AuthService {
 
   async login(input: { email: string; password: string }): Promise<User> {
     const email = input.email?.trim().toLowerCase()
+    if (email === DEMO_EMAIL && !demoLoginAllowed()) {
+      throw new AuthError('E-mail ou senha incorretos.', 401)
+    }
     const row = this.database.prepare('SELECT * FROM users WHERE email = ?').get(email) as
       UserRow | undefined
     if (!row || typeof input.password !== 'string') {
@@ -96,6 +103,7 @@ export class AuthService {
         WHERE sessions.token_hash = ? AND sessions.expires_at > ?`,
       )
       .get(tokenHash(token), Date.now()) as User | undefined
+    if (user?.email === DEMO_EMAIL && !demoLoginAllowed()) return null
     return user ?? null
   }
 

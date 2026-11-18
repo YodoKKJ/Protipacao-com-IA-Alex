@@ -1,3 +1,10 @@
+import {
+  prepareFiscalDetails,
+  type FiscalDetails,
+  type FiscalDraft,
+  FiscalValidationError,
+} from './fiscal'
+
 export interface Note {
   id: string
   number: number
@@ -6,9 +13,12 @@ export interface Note {
   description: string
   amountCents: number
   issuedAt: string
+  fiscal: FiscalDetails | null
 }
 
-export type NoteDraft = Pick<Note, 'recipient' | 'description' | 'amountCents'>
+export type NoteDraft = Pick<Note, 'recipient' | 'description' | 'amountCents'> & {
+  fiscal?: FiscalDraft
+}
 
 export interface NoteRepository {
   list(): Promise<Note[]>
@@ -48,11 +58,15 @@ export class NoteService {
     if (!description || description.length > 500) {
       throw new NoteValidationError('Informe uma descrição de até 500 caracteres.')
     }
-    if (
-      !Number.isSafeInteger(draft.amountCents) ||
-      draft.amountCents <= 0 ||
-      draft.amountCents > 100_000_000_00
-    ) {
+    let fiscal: FiscalDetails | null = null
+    try {
+      if (draft.fiscal) fiscal = prepareFiscalDetails(draft.fiscal)
+    } catch (error) {
+      if (error instanceof FiscalValidationError) throw new NoteValidationError(error.message)
+      throw error
+    }
+    const amountCents = fiscal?.totalCents ?? draft.amountCents
+    if (!Number.isSafeInteger(amountCents) || amountCents <= 0 || amountCents > 10_000_000_000) {
       throw new NoteValidationError('Informe um valor maior que zero e de até R$ 100 milhões.')
     }
     return this.repository.create({
@@ -60,8 +74,9 @@ export class NoteService {
       issuerName,
       recipient,
       description,
-      amountCents: draft.amountCents,
+      amountCents,
       issuedAt: this.now(),
+      fiscal,
     })
   }
 }

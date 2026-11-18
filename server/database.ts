@@ -43,10 +43,15 @@ export function openDatabase(path = process.env.DATABASE_PATH ?? 'data/emprestaa
       description TEXT NOT NULL,
       amount_cents INTEGER NOT NULL,
       issued_at TEXT NOT NULL,
+      fiscal_json TEXT,
       UNIQUE (user_id, number)
     );
     CREATE INDEX IF NOT EXISTS notes_user_number ON notes(user_id, number DESC);
   `)
+  const noteColumns = database.prepare('PRAGMA table_info(notes)').all() as { name: string }[]
+  if (!noteColumns.some((column) => column.name === 'fiscal_json')) {
+    database.exec('ALTER TABLE notes ADD COLUMN fiscal_json TEXT')
+  }
   return database
 }
 

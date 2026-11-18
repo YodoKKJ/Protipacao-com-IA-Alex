@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { LoanService, LoanValidationError } from '../src/domain/LoanService'
 import type { LoanDraft } from '../src/domain/loan'
 import { NoteService, NoteValidationError, type NoteDraft } from '../src/domain/note'
+import type { FiscalDraft } from '../src/domain/fiscal'
 import { AuthError, AuthService, sessionMaxAge, type User } from './AuthService'
 import { SqliteLoanRepository } from './SqliteLoanRepository'
 import { SqliteNoteRepository } from './SqliteNoteRepository'
@@ -45,6 +46,7 @@ function noteDraftFrom(body: unknown): NoteDraft {
     recipient: values.recipient,
     description: values.description,
     amountCents: values.amountCents,
+    fiscal: values.fiscal as FiscalDraft | undefined,
   }
 }
 

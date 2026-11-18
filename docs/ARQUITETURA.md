@@ -32,7 +32,9 @@ flowchart LR
 
 `LoanService` recebe `LoanRepository` por construtor. O servidor instancia o serviço com um repositório vinculado ao ID da sessão, mantendo as regras de domínio sem dependência de Express ou SQLite. Componentes React são funções, conforme a convenção do framework; classes são usadas para serviços e adaptadores que encapsulam comportamento.
 
-`NoteService` segue o mesmo princípio. O número da nota é atribuído em transação no repositório SQLite, com unicidade por usuário. Emitente e data são registrados no momento da emissão. A nota não possui campos ou identificadores fiscais e nunca é transmitida à SEFAZ.
+`NoteService` segue o mesmo princípio. O número da nota é atribuído em transação no repositório SQLite, com unicidade por usuário. Emitente e data são registrados no momento da emissão. A nota não possui chave de acesso ou protocolo de autorização e nunca é transmitida à SEFAZ.
+
+O formulário fiscal simulado agora guarda um instantâneo dos campos de operação, emitente, destinatário, itens, totalizadores informativos, transporte e pagamento em `fiscal_json`. A migração adiciona essa coluna sem apagar as notas antigas. O total é recalculado no domínio; tributos digitados não passam por motor fiscal ou validação de regras da NF-e. O DANFE de demonstração mostra explicitamente que a chave e o protocolo não foram gerados.
 
 ## Regras de negócio
 
@@ -49,6 +51,8 @@ flowchart LR
 As senhas são armazenadas como hash `scrypt` com salt aleatório. A sessão usa token aleatório; apenas seu hash é guardado no SQLite. O cookie é `HttpOnly` e `SameSite=Strict`, e requisições mutáveis com `Origin` de outro host são rejeitadas. Em produção com `NODE_ENV=production`, o cookie exige HTTPS. Toda consulta a empréstimos e notas filtra por `user_id`, inclusive leitura por ID. SQL usa parâmetros, e o corpo JSON tem limite de 16 KB.
 
 O banco é criado em `data/` por padrão, fora do Git. Para implantação, manter o arquivo em armazenamento persistente e usar HTTPS. O MVP ainda não inclui verificação de e-mail, recuperação de senha, envio de lembretes nem exclusão de conta.
+
+A conta de demonstração é criada somente quando o servidor é iniciado fora do modo de produção e vinculado a uma interface local. O host padrão da API e do Vite é `127.0.0.1`. Credenciais fixas são exclusivas dessa demonstração e não devem ser usadas para dados reais.
 
 ## Testes
 
