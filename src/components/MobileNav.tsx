@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { History, Home, Plus } from 'lucide-react'
+import { FileText, History, Home, Plus } from 'lucide-react'
 
 export function MobileNav() {
   return (
@@ -29,6 +29,13 @@ export function MobileNav() {
       >
         <History size={21} aria-hidden="true" />
         <span>Histórico</span>
+      </NavLink>
+      <NavLink
+        to="/notas"
+        className={({ isActive }) => `mobile-nav-item ${isActive ? 'is-active' : ''}`}
+      >
+        <FileText size={21} aria-hidden="true" />
+        <span>Notas</span>
       </NavLink>
     </nav>
   )

@@ -37,6 +37,7 @@ O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e en
 - Cadastro, login e logout por sessão em cookie `HttpOnly`.
 - Empréstimos privados por conta: criar, listar, consultar, editar e marcar devolução.
 - Busca, histórico, destaque de atrasados e interface para desktop e celular.
+- Notas demonstrativas com numeração por conta, consulta, impressão e opção de preencher dados a partir de um empréstimo. **São simulações sem validade fiscal e sem envio à SEFAZ.**
 - Validação de dados no servidor, senha derivada com `scrypt` e banco SQLite persistente.
 
 ### API
@@ -52,8 +53,11 @@ O Vite mostra o endereço do front-end (geralmente `http://localhost:5173`) e en
 | `POST` | `/api/loans` | Criar empréstimo |
 | `PUT` | `/api/loans/:id` | Editar empréstimo em aberto |
 | `POST` | `/api/loans/:id/return` | Registrar devolução |
+| `GET` | `/api/notes` | Listar notas simuladas da conta |
+| `GET` | `/api/notes/:id` | Consultar uma nota simulada |
+| `POST` | `/api/notes` | Emitir uma nota simulada |
 
-O corpo de criação/edição usa `item`, `person`, `lentAt`, `dueAt` e `note`; datas seguem `AAAA-MM-DD`. Erros retornam `{ "error": "mensagem" }` com status apropriado.
+O corpo de criação/edição de empréstimo usa `item`, `person`, `lentAt`, `dueAt` e `note`; datas seguem `AAAA-MM-DD`. A emissão de nota usa `recipient`, `description` e `amountCents` (inteiro em centavos). O servidor define número, emitente e data. Erros retornam `{ "error": "mensagem" }` com status apropriado.
 
 ## Verificação
 
@@ -71,8 +75,8 @@ npm run test:all
 
 | Camada | Comando individual | O que verifica |
 | --- | --- | --- |
-| Unitária | `npm run test:unit` | Regras de criação, datas, edição e devolução do `LoanService` isolado. |
-| Integração | `npm run test:integration` | API HTTP real com autenticação, SQLite, isolamento de contas e persistência. |
-| Ponta a ponta | `npm run test:e2e` | Cadastro, formulário, edição, devolução, histórico e novo login no Chromium, em desktop e celular. |
+| Unitária | `npm run test:unit` | Regras de empréstimos e emissão de notas isoladas. |
+| Integração | `npm run test:integration` | API HTTP real com autenticação, SQLite, notas, isolamento de contas e persistência. |
+| Ponta a ponta | `npm run test:e2e` | Cadastro, empréstimo, nota, devolução, histórico e novo login no Chromium, em desktop e celular. |
 
 O teste ponta a ponta compila o projeto, inicia um servidor próprio na porta 3107 e usa SQLite em memória. Ele não altera o banco de uso normal. A pesquisa com usuários prevista no protótipo continua pendente; os testes automatizados verificam o software, não validam as hipóteses de produto.

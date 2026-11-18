@@ -14,6 +14,9 @@ import { HomePage } from './pages/HomePage'
 import { NewPage } from './pages/NewPage'
 import { NotFound } from './pages/NotFound'
 import { AuthPage } from './pages/AuthPage'
+import { NotesPage } from './pages/NotesPage'
+import { NewNotePage } from './pages/NewNotePage'
+import { NoteDetailPage } from './pages/NoteDetailPage'
 
 type Notice = { message: string; kind: 'success' | 'error' }
 
@@ -96,6 +99,9 @@ function LoanApp({ name, onLogout }: { name: string; onLogout: () => Promise<voi
               <Route path="/" element={<HomePage loans={loans} />} />
               <Route path="/novo" element={<NewPage onCreate={handleCreate} />} />
               <Route path="/historico" element={<HistoryPage loans={loans} />} />
+              <Route path="/notas" element={<NotesPage />} />
+              <Route path="/notas/nova" element={<NewNotePage loans={loans} />} />
+              <Route path="/notas/:id" element={<NoteDetailPage />} />
               <Route
                 path="/emprestimo/:id"
                 element={<DetailPage loans={loans} onReturn={handleReturn} />}

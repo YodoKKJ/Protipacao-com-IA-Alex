@@ -32,6 +32,28 @@ test('cadastra, edita, devolve e recupera um empréstimo após novo login', asyn
   await page.getByRole('button', { name: 'Salvar alterações' }).click()
   await expect(page.getByText('Está com Bia.')).toBeVisible()
 
+  const loanUrl = page.url()
+  await page.getByRole('link', { name: 'Emitir nota simulada' }).click()
+  await expect(page.getByLabel('Destinatário')).toHaveValue('Bia')
+  await expect(page.getByLabel('Descrição')).toHaveValue(item)
+  await page.getByLabel('Valor demonstrativo (R$)').fill('45,90')
+  await page.getByRole('button', { name: 'Emitir nota simulada' }).click()
+  await expect(page.getByRole('heading', { name: 'Nota 000001' })).toBeVisible()
+  await expect(page.getByText('R$ 45,90').first()).toBeVisible()
+  await expect(page.getByText(/não tem validade fiscal/)).toBeVisible()
+  await page.evaluate(() => {
+    window.print = () => {
+      document.body.dataset.printRequested = 'true'
+    }
+  })
+  await page.getByRole('button', { name: 'Imprimir ou salvar em PDF' }).click()
+  await expect(page.locator('body')).toHaveAttribute('data-print-requested', 'true')
+  await page.getByRole('link', { name: 'Voltar às notas' }).click()
+  await expect(page.getByText('Nota 000001')).toBeVisible()
+  await page.reload()
+  await expect(page.getByText('Nota 000001')).toBeVisible()
+  await page.goto(loanUrl)
+
   await page.getByRole('button', { name: 'Marcar como devolvido' }).click()
   await expect(page.getByRole('dialog', { name: 'Objeto devolvido?' })).toBeVisible()
   await page.getByRole('button', { name: 'Confirmar devolução' }).click()

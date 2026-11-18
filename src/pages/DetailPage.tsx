@@ -102,6 +102,12 @@ export function DetailPage({
               >
                 Editar detalhes
               </Link>
+              <Link
+                className="button button--quiet button--full"
+                to={`/notas/nova?emprestimo=${loan.id}`}
+              >
+                Emitir nota simulada
+              </Link>
             </>
           )}
         </aside>

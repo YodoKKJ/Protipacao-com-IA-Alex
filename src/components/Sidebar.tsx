@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { History, Home, Sparkles } from 'lucide-react'
+import { FileText, History, Home, Sparkles } from 'lucide-react'
 import { Brand } from './Brand'
 
 export function Sidebar({ openCount }: { openCount: number }) {
@@ -21,6 +21,12 @@ export function Sidebar({ openCount }: { openCount: number }) {
           className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}
         >
           <History size={19} aria-hidden="true" /> Histórico
+        </NavLink>
+        <NavLink
+          to="/notas"
+          className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}
+        >
+          <FileText size={19} aria-hidden="true" /> Notas simuladas
         </NavLink>
       </nav>
       <div className="sidebar-bottom">

@@ -11,20 +11,28 @@ flowchart LR
   Sqlite --> DB[(SQLite)]
   API --> Auth[AuthService]
   Auth --> DB
+  API --> NoteService[NoteService]
+  NoteService --> NoteContract[NoteRepository: interface]
+  NoteSqlite[SqliteNoteRepository] -. implementa .-> NoteContract
+  NoteSqlite --> DB
 ```
 
 ## Responsabilidades
 
 - `src/pages` e `src/components`: apresentação, navegação, formulários e feedback.
 - `src/application`: estado da interface e operações assíncronas.
-- `src/infrastructure/LoanApi.ts`: cliente HTTP, sem regras de negócio.
+- `src/infrastructure/LoanApi.ts` e `NoteApi.ts`: clientes HTTP, sem regras de negócio.
 - `src/domain`: entidade, contrato de repositório, validação e transições do empréstimo.
 - `server/app.ts`: rotas, autenticação obrigatória e conversão de erros em respostas HTTP.
 - `server/AuthService.ts`: cadastro, verificação de senha e sessões.
 - `server/SqliteLoanRepository.ts`: operações SQL sempre limitadas ao usuário autenticado.
+- `src/domain/note.ts`: dados, contrato e validação da emissão demonstrativa.
+- `server/SqliteNoteRepository.ts`: notas persistidas e numeradas em transação por usuário.
 - `server/database.ts`: abertura do banco e criação idempotente do esquema.
 
 `LoanService` recebe `LoanRepository` por construtor. O servidor instancia o serviço com um repositório vinculado ao ID da sessão, mantendo as regras de domínio sem dependência de Express ou SQLite. Componentes React são funções, conforme a convenção do framework; classes são usadas para serviços e adaptadores que encapsulam comportamento.
+
+`NoteService` segue o mesmo princípio. O número da nota é atribuído em transação no repositório SQLite, com unicidade por usuário. Emitente e data são registrados no momento da emissão. A nota não possui campos ou identificadores fiscais e nunca é transmitida à SEFAZ.
 
 ## Regras de negócio
 
@@ -34,13 +42,14 @@ flowchart LR
 - Repetir a devolução preserva a primeira data registrada.
 - IDs desconhecidos ou pertencentes a outra conta não expõem dados.
 - O servidor gera IDs; o cliente não decide identidade nem estado de devolução.
+- Notas exigem destinatário, descrição e valor inteiro em centavos maior que zero; depois de emitidas, são somente para consulta e impressão.
 
 ## Segurança e persistência
 
-As senhas são armazenadas como hash `scrypt` com salt aleatório. A sessão usa token aleatório; apenas seu hash é guardado no SQLite. O cookie é `HttpOnly` e `SameSite=Strict`, e requisições mutáveis com `Origin` de outro host são rejeitadas. Em produção com `NODE_ENV=production`, o cookie exige HTTPS. Toda consulta a empréstimos filtra por `user_id`, inclusive leitura e atualização por ID. SQL usa parâmetros, e o corpo JSON tem limite de 16 KB.
+As senhas são armazenadas como hash `scrypt` com salt aleatório. A sessão usa token aleatório; apenas seu hash é guardado no SQLite. O cookie é `HttpOnly` e `SameSite=Strict`, e requisições mutáveis com `Origin` de outro host são rejeitadas. Em produção com `NODE_ENV=production`, o cookie exige HTTPS. Toda consulta a empréstimos e notas filtra por `user_id`, inclusive leitura por ID. SQL usa parâmetros, e o corpo JSON tem limite de 16 KB.
 
 O banco é criado em `data/` por padrão, fora do Git. Para implantação, manter o arquivo em armazenamento persistente e usar HTTPS. O MVP ainda não inclui verificação de e-mail, recuperação de senha, envio de lembretes nem exclusão de conta.
 
 ## Testes
 
-`src/domain/LoanService.test.ts` exercita validação e mudanças de estado com repositório em memória. `server/app.test.ts` inicia a API com banco SQLite temporário e verifica cadastro, login, isolamento, persistência, edição e devolução. `e2e/loan-flow.spec.ts` executa o fluxo completo no Chromium em desktop e celular, com servidor e banco em memória exclusivos para o teste. `npm run test:all` reúne as três camadas e a checagem de formatação. `npm run build` verifica TypeScript do cliente e servidor e gera o front-end servido pelo Express.
+`src/domain/LoanService.test.ts` e `note.test.ts` exercitam regras com repositórios em memória. `server/app.test.ts` inicia a API com banco SQLite temporário e verifica cadastro, login, isolamento, persistência, empréstimos e notas. `e2e/loan-flow.spec.ts` executa o fluxo completo no Chromium em desktop e celular, com servidor e banco em memória exclusivos para o teste. `npm run test:all` reúne as três camadas e a checagem de formatação. `npm run build` verifica TypeScript do cliente e servidor e gera o front-end servido pelo Express.

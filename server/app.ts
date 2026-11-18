@@ -3,8 +3,10 @@ import cookieParser from 'cookie-parser'
 import { resolve } from 'node:path'
 import { LoanService, LoanValidationError } from '../src/domain/LoanService'
 import type { LoanDraft } from '../src/domain/loan'
+import { NoteService, NoteValidationError, type NoteDraft } from '../src/domain/note'
 import { AuthError, AuthService, sessionMaxAge, type User } from './AuthService'
 import { SqliteLoanRepository } from './SqliteLoanRepository'
+import { SqliteNoteRepository } from './SqliteNoteRepository'
 import type { AppDatabase } from './database'
 
 const COOKIE_NAME = 'emprestaai_session'
@@ -26,6 +28,23 @@ function credentialsFrom(body: unknown): { email: string; password: string; name
     email: typeof values.email === 'string' ? values.email : '',
     password: typeof values.password === 'string' ? values.password : '',
     name: typeof values.name === 'string' ? values.name : '',
+  }
+}
+
+function noteDraftFrom(body: unknown): NoteDraft {
+  if (!body || typeof body !== 'object') throw new NoteValidationError('Dados da nota inválidos.')
+  const values = body as Record<string, unknown>
+  if (
+    typeof values.recipient !== 'string' ||
+    typeof values.description !== 'string' ||
+    typeof values.amountCents !== 'number'
+  ) {
+    throw new NoteValidationError('Dados da nota inválidos.')
+  }
+  return {
+    recipient: values.recipient,
+    description: values.description,
+    amountCents: values.amountCents,
   }
 }
 
@@ -117,6 +136,26 @@ export function createApp(database: AppDatabase) {
     response.json({ loan })
   })
 
+  app.use('/api/notes', requireUser)
+  const noteServiceFor = (user: User) =>
+    new NoteService(new SqliteNoteRepository(database, user.id))
+
+  app.get('/api/notes', async (_request, response) => {
+    response.json({ notes: await noteServiceFor(response.locals.user as User).list() })
+  })
+  app.get('/api/notes/:id', async (request, response) => {
+    const note = await noteServiceFor(response.locals.user as User).findById(
+      request.params.id as string,
+    )
+    if (!note) throw new NoteValidationError('Nota não encontrada.')
+    response.json({ note })
+  })
+  app.post('/api/notes', async (request, response) => {
+    const user = response.locals.user as User
+    const note = await noteServiceFor(user).issue(noteDraftFrom(request.body), user.name)
+    response.status(201).json({ note })
+  })
+
   app.use('/api', (_request, response) =>
     response.status(404).json({ error: 'Rota não encontrada.' }),
   )
@@ -129,6 +168,10 @@ export function createApp(database: AppDatabase) {
       return void response.status(error.status).json({ error: error.message })
     if (error instanceof LoanValidationError) {
       const status = error.message === 'Empréstimo não encontrado.' ? 404 : 422
+      return void response.status(status).json({ error: error.message })
+    }
+    if (error instanceof NoteValidationError) {
+      const status = error.message === 'Nota não encontrada.' ? 404 : 422
       return void response.status(status).json({ error: error.message })
     }
     if (error instanceof SyntaxError && 'body' in error)

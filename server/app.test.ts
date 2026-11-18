@@ -125,4 +125,43 @@ describe('API do EmprestaAí', () => {
       total: 1,
     })
   })
+
+  it('emite notas simuladas sequenciais e privadas por conta', async () => {
+    const request = await start()
+    expect((await request('/notes')).status).toBe(401)
+    const first = await request('/auth/register', 'POST', {
+      name: 'Alex',
+      email: 'alex@example.com',
+      password: 'senha-forte-123',
+    })
+    const second = await request('/auth/register', 'POST', {
+      name: 'Bia',
+      email: 'bia@example.com',
+      password: 'senha-forte-123',
+    })
+    const draft = { recipient: 'Ana', description: 'Livro emprestado', amountCents: 4590 }
+    expect(
+      (await request('/notes', 'POST', { ...draft, amountCents: 0 }, first.cookie!)).status,
+    ).toBe(422)
+    const note1 = await request(
+      '/notes',
+      'POST',
+      { ...draft, issuerName: 'Nome falso' },
+      first.cookie!,
+    )
+    const note2 = await request('/notes', 'POST', draft, first.cookie!)
+    expect(note1.status).toBe(201)
+    expect(note1.data.note).toMatchObject({ number: 1, issuerName: 'Alex', amountCents: 4590 })
+    expect(note2.data.note.number).toBe(2)
+    expect(
+      (await request('/notes', 'GET', undefined, first.cookie!)).data.notes.map(
+        (note: { number: number }) => note.number,
+      ),
+    ).toEqual([2, 1])
+    expect((await request('/notes', 'GET', undefined, second.cookie!)).data.notes).toEqual([])
+    expect(
+      (await request(`/notes/${note1.data.note.id}`, 'GET', undefined, second.cookie!)).status,
+    ).toBe(404)
+    expect((await request('/notes', 'POST', draft, second.cookie!)).data.note.number).toBe(1)
+  })
 })

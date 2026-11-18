@@ -34,6 +34,18 @@ export function openDatabase(path = process.env.DATABASE_PATH ?? 'data/emprestaa
       created_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS loans_user_created ON loans(user_id, created_at DESC);
+    CREATE TABLE IF NOT EXISTS notes (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      number INTEGER NOT NULL,
+      issuer_name TEXT NOT NULL,
+      recipient TEXT NOT NULL,
+      description TEXT NOT NULL,
+      amount_cents INTEGER NOT NULL,
+      issued_at TEXT NOT NULL,
+      UNIQUE (user_id, number)
+    );
+    CREATE INDEX IF NOT EXISTS notes_user_number ON notes(user_id, number DESC);
   `)
   return database
 }
