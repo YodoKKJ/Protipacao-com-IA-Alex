@@ -7,6 +7,7 @@ Aplicativo para registrar objetos emprestados, consultar com quem estão e acomp
 - [Aula 1: documento e telas do protótipo](entrega-aula1/Alex_Aula1_EmprestaAi.pdf)
 - [Aula 2: prévia do front-end](entrega-aula2/preview-desktop.png)
 - [Arquitetura e decisões técnicas](docs/ARQUITETURA.md)
+- [Diagramas de classes, casos de uso, atividades e sequência](docs/DIAGRAMAS.md)
 
 ## Como executar
 
